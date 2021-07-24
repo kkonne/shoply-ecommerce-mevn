@@ -4,6 +4,8 @@
 
 ## Technologies used: MongoDB, Node.js, Express.js & Vue.js with VueX, Vue Router and Vuetify
 
+### Install needed dependencies
+
 ```
 npm install
 ```
@@ -22,5 +24,4 @@ npm run build
 
 ### Customize configuration such as env.PORT or env.MONGO_URI to add to your own project
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
 Made by [Josip Leko](https://www.github.com/kkonne/).
