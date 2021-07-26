@@ -8,11 +8,6 @@ router.get('/', async (req, res) => {
     try {
         const Items = await Item.find();
         if(!Items) throw new Error('No items found!');
-        // const sorted = Item.sort((a,b) => {
-        //     return new Date(a.date).getTime() - new Date(b.date).getTime();
-        // });
-        
-        // res.status(200).json(sorted);
         res.status(200).json(Items);
     } catch (error) {
         res.status(500).json({ message: error.message });
