@@ -1,14 +1,22 @@
 <template>
   <div>
-      <h4>--- Cart payment ---</h4>
+      <h4 class="space-sm">--- Cart payment ---</h4>
 
-      <h3>Cart subtotal: {{ cartSubtotal.toFixed(2) }}</h3>
+      <h3 class="space-sm">Cart subtotal: {{ cartSubtotal.toFixed(2) }}</h3>
 
       <div class="promo">
         <p>If you have a promo code, you can enter it here:</p>
         
-        <input v-model="promoCodeInput" type="text">
+        <input v-model="promoCodeInput" type="text" class="space-sm">
         <button @click="applyPromoCode">Apply</button>
+
+        <div v-if="promoSuccess" class="space-md">
+          <span class="alert-success">Successfully applied promo code {{ promoSuccess }}</span>
+        </div>
+        
+        <div v-if="promoError" class="space-md">
+          <span class="alert-error">{{ promoError }}</span>
+        </div>
 
         <CartPromoCode 
         v-for="(code, i) in appliedPromoCodes"
@@ -18,9 +26,9 @@
 
 
 
-      <h2>Cart total: {{ cartTotal ? cartTotal.toFixed(2) : cartSubtotal.toFixed(2) }}</h2>
+      <h2 class="space-md">Cart total: {{ cartTotal ? cartTotal.toFixed(2) : cartSubtotal.toFixed(2) }}</h2>
 
-      <p>Billing Information: </p>
+      <p class="space-sm">Billing Information: </p>
 
       <label for="email">Email</label>
       <input v-model="emailInput" type="email" name="email">
@@ -37,9 +45,15 @@
     
       <br><br>
 
-      <button @click="attemptCheckout">CHECK OUT</button>
+      <button @click="attemptCheckout" class="class-sm">CHECK OUT</button>
 
-      <div v-if="isCheckoutSuccessful">Payment successful! Redirecting you to order summary!</div>
+      <div v-if="checkoutSuccess" class="space-md">
+        <span class="alert-success">Payment successful! Redirecting you to order summary!</span>
+      </div>
+      
+      <div v-if="checkoutError" class="space-md">
+        <span class="alert-error">{{ checkoutError }}</span>
+      </div>
   </div>
 </template>
 
@@ -79,7 +93,10 @@ export default {
         emailInput: "",
         addressInput: "",
         creditCardInput: "",
-        isCheckoutSuccessful: false,
+        promoError: null,
+        promoSuccess: null,
+        checkoutSuccess: null,
+        checkoutError: null,
       }
     },
 
@@ -89,13 +106,18 @@ export default {
 
         this.promoCodeInput = "";
 
-        if(!promoCodeInputValue) return 
+        if(!promoCodeInputValue) {
+          this.promoSuccess = null;
+          this.promoError = `Error! Invalid code input!`
+          return
+        } 
 
         const validPromo = this.discounts.find(code => code.code === promoCodeInputValue);
 
         // checking if code is valid
         if(!validPromo) {
-          console.log("This code is not valid!");
+          this.promoSuccess = null;
+          this.promoError = `Error! Code ${promoCodeInputValue} is not valid!`
           return
         }
 
@@ -103,15 +125,15 @@ export default {
         if(!this.appliedPromoCodes.length) {
           // SUCCESS
           this.$store.commit("applyPromoCode", validPromo);
-
-          // this.appliedPromoCodes.push(validPromo);
-          console.log(`Successfully applied promo code ${promoCodeInputValue}`);
+          this.promoError = null;
+          this.promoSuccess = validPromo.code;
           return;
         }
           
         // checking if code can be used with other codes
         if(!validPromo.combinable) {
-          console.log("This code can't be combined with other promo codes!");
+          this.promoSuccess = null;
+          this.promoError = `Error! Code ${promoCodeInputValue} cannot be combined with other promo codes!`
           return
         }
 
@@ -119,7 +141,8 @@ export default {
 
         // checking if code is already used
         if(isAlreadyUsed){
-          console.log("This promo code has already been used!");
+          this.promoSuccess = null;
+          this.promoError = `Error! Code ${promoCodeInputValue} has already been used!`
           return;
         }
 
@@ -127,13 +150,14 @@ export default {
 
         // checking if other used promo codes are combinable
         if(!isExistingCodeCombinable) {
-          console.log("Existing codes can't be combined with this promo code!");
+          this.promoSuccess = null;
+          this.promoError = `Error! Existing codes can't be combined with this promo code!`
           return
         }
 
         // SUCCESS
         this.$store.commit("applyPromoCode", validPromo);
-        console.log(`Successfully applied promo code ${promoCodeInputValue}`);
+        this.promoSuccess = validPromo.code;
       },
 
       attemptCheckout(){
@@ -146,28 +170,30 @@ export default {
         this.creditCardInput = "";
 
         if(!emailInputValue || !addressInputValue || !creditCardInputValue) {
-          console.log("Error! All fields are required!");
+          this.checkoutSuccess = null;
+          this.checkoutError = `Error! All fields are required!`
           return
         }
 
         // validate email via regex
         if (!/\S+@\S+\.\S+/.test(emailInputValue)) {
-          console.log("Invalid email!");
+          this.checkoutSuccess = null;
+          this.checkoutError = `Error! Invalid email!`
           return
         }
 
         // validate credit card number (between 8 and 19 digits)
         if(creditCardInputValue.length < 8 || creditCardInputValue.length > 19){
-          console.log("Invalid credit card number!");
+          this.checkoutSuccess = null;
+          this.checkoutError = `Error! Invalid credit card number! (8-19 characters)`
           return
         }
-            
-        console.log("Payment successful!");
 
-        this.isCheckoutSuccessful = true;
+        this.checkoutError = null;
+        this.checkoutSuccess = true;
         const el = this;
         setTimeout(() => {
-          el.isCheckoutSuccessful = false;
+          el.checkoutSuccess = false;
           el.$router.push('/order-summary')
         }, 3000);
       },

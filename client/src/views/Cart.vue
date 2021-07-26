@@ -12,8 +12,8 @@
             <CartPayment />
         </div>
         
-        <div v-else>
-            <p>Your cart is empty! Add items to your cart and you'll see them here.</p>
+        <div v-else class="space-md">
+            <span class="alert-error">Your cart is empty! Add items to your cart and you'll see them here.</span>
         </div>
   </div>
 </template>

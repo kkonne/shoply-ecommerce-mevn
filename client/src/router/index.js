@@ -8,22 +8,26 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { requiresNav: true }
   },
   {
     path: '/about',
     name: 'About',
-    component: () => import('../views/About.vue')
+    component: () => import('../views/About.vue'),
+    meta: { requiresNav: true }
   },
   {
     path: '/cart',
     name: 'Cart',
-    component: () => import('../views/Cart.vue')
+    component: () => import('../views/Cart.vue'),
+    meta: { requiresNav: true }
   },
   {
     path: '/order-summary',
     name: 'OrderSummary',
-    component: () => import('../views/OrderSummary.vue')
+    component: () => import('../views/OrderSummary.vue'),
+    meta: { requiresNav: false }
   }
 ]
 

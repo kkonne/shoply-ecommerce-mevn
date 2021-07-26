@@ -32,7 +32,7 @@
       </tr>
     </table>
 
-    <!-- <router-link to="/">Countinue shopping</router-link> -->
+    <br><br>
     
     <button @click="finishOrder">Countinue shopping</button>
   </div>
