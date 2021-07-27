@@ -10,6 +10,14 @@
 npm install
 ```
 
+### Install dependencies in Vue.js project
+
+```
+cd client
+npm install
+cd ..
+```
+
 ### Compiles and hot-reloads frontend and backend concurrently
 
 ```
