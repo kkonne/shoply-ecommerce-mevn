@@ -11,6 +11,38 @@ let updatePromoCodesLocalStorage = (promocodes) => {
   localStorage.setItem("promoCodes", JSON.stringify(promocodes))
 }
 
+let calculateItemSubtotal = (item) => {
+  let itemSubtotal;
+
+  if(item.name === "Motion Sensor"){
+    if(Math.floor(item.quantity / 3) < 1) {
+      itemSubtotal = (item.price * item.quantity)
+      return itemSubtotal;
+    }
+
+    if(Math.floor(item.quantity / 3) >= 1){
+      itemSubtotal = (Math.floor(item.quantity / 3) * 65.00) + ((item.quantity % 3) * item.price);
+      return itemSubtotal;
+    }
+  }
+  
+  if(item.name === "Smoke Sensor"){
+    if(Math.floor(item.quantity / 2) < 1) {
+      itemSubtotal = (item.price * item.quantity)
+      return itemSubtotal;
+    }
+
+    if(Math.floor(item.quantity / 2) >= 1){
+      itemSubtotal = (Math.floor(item.quantity / 2) * 35.00) + (Math.floor(item.quantity % 2) * item.price);
+      return itemSubtotal;
+    }
+  }
+
+  itemSubtotal = (item.price * item.quantity);
+
+  return itemSubtotal;
+};
+
 export default new Vuex.Store({
   state: {
     cart: [],
@@ -31,18 +63,26 @@ export default new Vuex.Store({
     },
 
     cartSubtotal: state => {
-      let cartSubtotal = state.cart.reduce((a, b) => a + (b.price * b.quantity), 0)
+      let cartSubtotal = 0
+
+      state.cart.forEach(item => {
+        cartSubtotal += calculateItemSubtotal(item);
+      });
 
       return cartSubtotal
     },
     
     cartTotal: state => {
-      if(!state.promoCodes.length) return
       
-      let cartTotal = state.cart.reduce((a, b) => a + (b.price * b.quantity), 0)
+      let cartTotal = 0
+      
+      state.cart.forEach(item => {
+        cartTotal += calculateItemSubtotal(item);
+      });
+        
+      if(!state.promoCodes.length) return cartTotal;
 
       state.promoCodes.forEach(code => {
-        if(code.type === "percentage") cartTotal *= (1 - code.value)
         if(code.type === "value") {
           if(cartTotal > code.value){
             cartTotal -= code.value
@@ -50,14 +90,26 @@ export default new Vuex.Store({
             cartTotal = 0
           }
         }
-      })
+      });
+      
+      state.promoCodes.forEach(code => {
+        if(code.type === "percentage") cartTotal *= (1 - code.value)
+      });
 
       return cartTotal
     },
 
     appliedPromoCodes: state => {
       return state.promoCodes
-    }
+    },
+
+    itemSubtotal: state => product => {
+      const item = state.cart.find(item => item._id === product._id)
+
+      if(!item) return;
+
+      return calculateItemSubtotal(item);
+    },
   },
 
   mutations: {

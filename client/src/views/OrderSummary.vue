@@ -15,7 +15,7 @@
         <td style="padding: .5rem">{{ item.name }}</td>
         <td style="padding: .5rem">{{ item.price }}</td>
         <td style="padding: .5rem">{{ item.quantity }}</td>
-        <td style="padding: .5rem">{{ (item.quantity * item.price).toFixed(2) }}</td>
+        <td style="padding: .5rem">{{ ($store.getters.itemSubtotal(item)).toFixed(2) }}</td>
       </tr>
       <br>
       <tr>
@@ -28,7 +28,7 @@
         <td style="padding: .5rem">Total</td>
         <td style="padding: .5rem"></td>
         <td style="padding: .5rem"></td>
-        <td style="padding: .5rem">{{ cartTotal ? cartTotal.toFixed(2) : cartSubtotal.toFixed(2) }}</td>
+        <td style="padding: .5rem">{{ cartTotal.toFixed(2) }}</td>
       </tr>
     </table>
 

@@ -26,7 +26,7 @@
 
 
 
-      <h2 class="space-md">Cart total: {{ cartTotal ? cartTotal.toFixed(2) : cartSubtotal.toFixed(2) }}</h2>
+      <h2 class="space-md">Cart total: {{ cartTotal.toFixed(2) }}</h2>
 
       <p class="space-sm">Billing Information: </p>
 
